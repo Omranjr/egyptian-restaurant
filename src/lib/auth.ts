@@ -19,13 +19,23 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
     }),
-    AppleProvider({
-      clientId: process.env.APPLE_ID!,
-      clientSecret: process.env.APPLE_SECRET!,
-    }),
+    // Only include Apple provider if credentials are provided
+    ...(process.env.APPLE_ID && process.env.APPLE_SECRET ? [
+      AppleProvider({
+        clientId: process.env.APPLE_ID,
+        clientSecret: process.env.APPLE_SECRET,
+      })
+    ] : []),
   ],
   callbacks: {
     session: async ({ session, token }) => {
@@ -40,6 +50,13 @@ export const authOptions: NextAuthOptions = {
       }
       return token
     },
+    redirect: async ({ url, baseUrl }) => {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      // Allows callback URLs on the same origin
+      if (new URL(url).origin === baseUrl) return url
+      return baseUrl
+    }
   },
   session: {
     strategy: "jwt",
@@ -48,4 +65,5 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
     error: "/auth/error",
   },
+  debug: process.env.NODE_ENV === "development",
 }
