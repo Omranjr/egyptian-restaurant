@@ -21,7 +21,7 @@ export default function Hero() {
       <div className="relative grid md:grid-cols-2 gap-8 p-8 md:p-12 items-center">
         <div>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-[#d4af37] via-[#bfa14a] to-[#7c5c13] bg-clip-text text-transparent drop-shadow-lg">
-            𓂀 Fata Morgana 𓂀
+            Fata Morgana 
           </h1>
           <p className="mt-6 text-[#7c5c13] max-w-prose text-lg leading-relaxed font-semibold">
             Experience the divine flavors of ancient Egypt. From the sacred koshari to the royal grills,

@@ -37,8 +37,7 @@ export default function Navbar() {
       />
       <div className="relative mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 text-2xl font-bold tracking-wide bg-gradient-to-r from-[#d4af37] to-[#bfa14a] bg-clip-text text-transparent">
-          <Image src="/lotus-icon.svg" alt="Lotus" width={28} height={28} className="inline-block mr-1" />
-          𓂀 Fata Morgana 𓂀
+          Fata Morgana
         </Link>
         <div className="flex items-center gap-6 text-sm">
           <Link href="/" className="text-[#7c5c13] hover:text-[#d4af37] transition-colors font-medium">Home</Link>
