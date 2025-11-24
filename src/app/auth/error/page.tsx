@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { Suspense } from "react";
 
 const errorMessages: Record<string, string> = {
   Configuration: "There is a problem with the server configuration. Please contact support.",
@@ -11,7 +12,7 @@ const errorMessages: Record<string, string> = {
   Default: "An error occurred during authentication. Please try again.",
 };
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error") || "Default";
   const message = errorMessages[error] || errorMessages.Default;
@@ -50,9 +51,9 @@ export default function AuthErrorPage() {
             <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-left">
               <h3 className="font-semibold text-yellow-900 text-sm mb-2">Configuration Issue:</h3>
               <div className="text-xs text-yellow-800 space-y-1">
-                <p>• Check that GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are set in .env.local</p>
-                <p>• Verify that NEXTAUTH_SECRET is configured</p>
-                <p>• Ensure redirect URIs are properly set in Google Cloud Console</p>
+                <p>• Check that NEXTAUTH_SECRET is configured in .env.local</p>
+                <p>• Verify that the database connection is working</p>
+                <p>• Ensure all required environment variables are set</p>
               </div>
             </div>
           )}
@@ -75,5 +76,17 @@ export default function AuthErrorPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-[#d4af37] text-xl">Loading...</div>
+      </div>
+    }>
+      <AuthErrorContent />
+    </Suspense>
   );
 }

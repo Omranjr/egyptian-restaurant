@@ -1,7 +1,6 @@
 import { NextAuthOptions } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import GoogleProvider from "next-auth/providers/google"
-import AppleProvider from "next-auth/providers/apple"
+import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "./prisma"
 
 declare module "next-auth" {
@@ -18,24 +17,40 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code"
+    CredentialsProvider({
+      name: "Email",
+      credentials: {
+        email: { label: "Email", type: "email", placeholder: "your@email.com" },
+        name: { label: "Name", type: "text", placeholder: "Your Name" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email) {
+          return null
         }
-      }
+
+        // Find or create user
+        let user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        })
+
+        if (!user) {
+          // Create new user
+          user = await prisma.user.create({
+            data: {
+              email: credentials.email,
+              name: credentials.name || credentials.email.split('@')[0],
+            },
+          })
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        }
+      },
     }),
-    // Only include Apple provider if credentials are provided
-    ...(process.env.APPLE_ID && process.env.APPLE_SECRET ? [
-      AppleProvider({
-        clientId: process.env.APPLE_ID,
-        clientSecret: process.env.APPLE_SECRET,
-      })
-    ] : []),
   ],
   callbacks: {
     session: async ({ session, token }) => {

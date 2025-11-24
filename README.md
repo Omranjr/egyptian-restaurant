@@ -5,11 +5,13 @@ A modern Egyptian restaurant website built with Next.js 14, featuring authentic 
 ## Features
 
 - 🏺 **Authentic Egyptian Menu** - Browse traditional dishes like Koshari, Mixed Grills, and desserts
-- 🔐 **Social Authentication** - Sign in with Google or Apple
+- 🔐 **Email Authentication** - Simple sign in/sign up with email
 - 🛒 **Shopping Cart** - Add items and manage your order
 - 👤 **User Profiles** - Save delivery details for faster checkout
+- 📧 **Email Notifications** - Automatic order emails sent to restaurant owner
+- 💰 **Payment Options** - Cash on Delivery and Apple Pay (coming soon)
 - 📱 **Responsive Design** - Beautiful Egyptian-themed UI that works on all devices
-- ⚡ **Modern Stack** - Built with Next.js 14, Prisma, NextAuth.js, and Tailwind CSS
+- ⚡ **Modern Stack** - Built with Next.js 15, Prisma, NextAuth.js, Resend, and Tailwind CSS
 
 ## Getting Started
 
@@ -17,8 +19,9 @@ A modern Egyptian restaurant website built with Next.js 14, featuring authentic 
 
 - Node.js 18+ 
 - npm or yarn
-- Google Cloud Console account (for Google OAuth)
-- Apple Developer account (for Apple OAuth, optional)
+- Resend account (for email notifications) - **REQUIRED**
+  - Sign up at [resend.com](https://resend.com)
+  - Free tier: 100 emails/day
 
 ### Installation
 
@@ -34,8 +37,8 @@ A modern Egyptian restaurant website built with Next.js 14, featuring authentic 
    ```
 
 3. **Set up environment variables**
-   - Copy `.env.local.example` to `.env.local`
-   - Fill in your OAuth credentials:
+   - Copy `env.example` to `.env.local`
+   - Fill in your credentials:
 
    ```env
    # Database
@@ -45,14 +48,14 @@ A modern Egyptian restaurant website built with Next.js 14, featuring authentic 
    NEXTAUTH_URL="http://localhost:3000"
    NEXTAUTH_SECRET="your-very-long-random-secret-key"
 
-   # Google OAuth
-   GOOGLE_CLIENT_ID="your-google-client-id"
-   GOOGLE_CLIENT_SECRET="your-google-client-secret"
-
-   # Apple OAuth (optional)
-   APPLE_ID="your-apple-id"
-   APPLE_SECRET="your-apple-secret"
+   # Resend Email API (REQUIRED for order notifications)
+   RESEND_API_KEY="re_your_resend_api_key_here"
    ```
+
+   **Important:** Get your Resend API key:
+   1. Sign up at [resend.com](https://resend.com)
+   2. Create an API key in the dashboard
+   3. Add it to `.env.local`
 
 4. **Set up the database**
    ```bash
@@ -67,76 +70,35 @@ A modern Egyptian restaurant website built with Next.js 14, featuring authentic 
 
    Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-### OAuth Setup
+### Email Notification Setup
 
-#### Google OAuth Setup (Required for Sign-in)
+**IMPORTANT: Resend API must be configured for order emails to work.**
 
-**IMPORTANT: Google OAuth must be configured for authentication to work.**
+See [EMAIL_SETUP.md](./EMAIL_SETUP.md) for detailed instructions.
 
-1. **Go to Google Cloud Console**
-   - Visit [Google Cloud Console](https://console.cloud.google.com/)
-   - Sign in with your Google account
+Quick setup:
+1. Sign up at [resend.com](https://resend.com) (free tier: 100 emails/day)
+2. Create an API key in your dashboard
+3. Add to `.env.local`:
+   ```env
+   RESEND_API_KEY="re_your_actual_api_key_here"
+   ```
+4. Restart dev server
 
-2. **Create or Select a Project**
-   - Click "Select a project" dropdown
-   - Either create a new project or select an existing one
+Orders will be emailed to: **mmmoo136@gmail.com**
 
-3. **Enable APIs**
-   - Go to "APIs & Services" → "Library"
-   - Search for "Google+ API" and enable it
-   - Also enable "Google People API" if available
+### Testing the Application
 
-4. **Create OAuth Credentials**
-   - Go to "APIs & Services" → "Credentials"
-   - Click "Create Credentials" → "OAuth 2.0 Client ID"
-   - If prompted, configure the OAuth consent screen first:
-     - Choose "External" user type
-     - Fill in app name: "Fata Morgana Egyptian Restaurant"
-     - Add your email as developer contact
-     - Save and continue through all steps
+See [TESTING_GUIDE.md](./TESTING_GUIDE.md) for complete testing instructions.
 
-5. **Configure OAuth Client**
-   - Application type: "Web application"
-   - Name: "Fata Morgana Local Development"
-   - **Authorized JavaScript origins:**
-     ```
-     http://localhost:3000
-     ```
-   - **Authorized redirect URIs:**
-     ```
-     http://localhost:3000/api/auth/callback/google
-     ```
-   - Click "Create"
-
-6. **Copy Credentials**
-   - Copy the "Client ID" and "Client Secret"
-   - Add them to your `.env.local` file:
-     ```env
-     GOOGLE_CLIENT_ID="your-actual-google-client-id"
-     GOOGLE_CLIENT_SECRET="your-actual-google-client-secret"
-     ```
-
-#### Apple OAuth Setup (Optional)
-
-1. Go to [Apple Developer Console](https://developer.apple.com/)
-2. Create a new App ID and Service ID
-3. Configure Sign in with Apple
-4. Set redirect URI to `http://localhost:3000/api/auth/callback/apple`
-5. Generate and download the private key
-6. Add credentials to `.env.local`
-
-#### Testing the Setup
-
-1. Start the development server: `npm run dev`
-2. Go to `http://localhost:3000`
-3. Click "Sign In with Google" in the navbar
-4. You should be redirected to Google's authentication page
-5. After signing in, you should be redirected back to the app
-
-If you see a "400: malformed request" error, double-check:
-- Your Google Client ID and Secret are correct
-- The authorized origins and redirect URIs match exactly
-- Your `.env.local` file is properly formatted
+Quick test:
+1. Start dev server: `npm run dev`
+2. Sign in with your email
+3. Add items to cart
+4. Complete checkout with delivery details
+5. Select payment method (Cash or Apple Pay)
+6. Place order
+7. Check email at mmmoo136@gmail.com
 
 ## Project Structure
 
